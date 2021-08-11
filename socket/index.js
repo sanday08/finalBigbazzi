@@ -18,9 +18,6 @@ let transactions = {}
 let andarBaharResult = 52;
 let adminPer = 90;
 io.on("connection", (socket) => {
-
-
-
   //Join Event When Application is Start
   socket.on("join", async ({ token, gameName }) => {
 
@@ -53,7 +50,7 @@ io.on("connection", (socket) => {
     if (result != 0) {
 
 
-      if (gameName == "Parity")
+      if (gameName == "parity")
         playParity(position, betPoint, result);
       else if (gameName == "andarBahar") {
 
