@@ -23,16 +23,16 @@ exports.register = asyncHandler(async (req, res, next) => {
 
 exports.login = asyncHandler(async (req, res, next) => {
 
-  const { userName, password } = req.body;
-  //userName and password fields are required
-  if (!userName && !password) {
+  const { mobile, password } = req.body;
+  //mobile and password fields are required
+  if (!mobile && !password) {
     return next(
-      new ErrorResponse("userName and password fields must be required"),
+      new ErrorResponse("mobile and password fields must be required"),
       400
     );
   }
   //Check for user
-  const user = await User.findOne({ userName }).select("+password");
+  const user = await User.findOne({ mobile }).select("+password");
 
   if (!user) {
     return next(new ErrorResponse("Invalide credentials", 401));
