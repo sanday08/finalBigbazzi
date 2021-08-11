@@ -2,7 +2,7 @@ const User = require("../../models/User");
 const Bet = require("../../models/Bet");
 const WinResult = require("../../models/WinResult");
 const Winning = require("../../models/Winning");
-const Subper = require("../../models/Subper");
+
 async function placeBet(userId, game, position, betPoint, adminPer) {
   //Verify Token
   try {
@@ -20,10 +20,7 @@ async function placeBet(userId, game, position, betPoint, adminPer) {
         userName: user.userName,
         position,
         name: user.name,
-        adminCommissions: (betPoint * (100 - adminPer)) / 100,
-        superDistributerCommission:
-          (betPoint * superDistributer.commissionPercentage) / 100,
-        retailerCommission: (betPoint * user.commissionPercentage) / 100,
+
       });
       await User.findByIdAndUpdate(userId, {
         $inc: {
@@ -56,6 +53,7 @@ async function winGamePay(price, betId, winPosition, gameName) {
     const betData = await Bet.findByIdAndUpdate(betId, {
       $inc: { won: price },
     });
+
     let user = await User.findByIdAndUpdate(betData.userId, {
       $inc: { amount: price, wonPoint: price },
     });
@@ -105,19 +103,7 @@ async function getLastrecord(gameName, userId) {
   }
 }
 
-async function takePoint(gameName, userId) {
-  try {
-    user = await User.findById(userId);
-    await User.findByIdAndUpdate(userId, {
-      $inc: { amount: user[gameName], wonPoint: user[gameName] },
-      [gameName]: 0,
-    });
-    return "balance is Updated";
-  } catch (err) {
-    console.log("Error on TakePoint ", err.message);
-    return err.message;
-  }
-}
+
 
 //Get Admin Percentage for winning Result
 async function getAdminPer() {
@@ -135,6 +121,5 @@ module.exports = {
   getAdminPer,
   addGameResult,
   getLastrecord,
-  takePoint,
   getCurrentBetData,
 };

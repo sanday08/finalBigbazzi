@@ -1,6 +1,6 @@
 const { io } = require("../server");
 const { getUserInfoBytoken } = require("./utils/users");
-const { placeBet, winGamePay, getAdminPer, addGameResult, getLastrecord, takePoint, getCurrentBetData, updateAndarBahar } = require("./utils/bet");
+const { placeBet, winGamePay, getAdminPer, addGameResult, getLastrecord, getCurrentBetData } = require("./utils/bet");
 const immutable = require("object-path-immutable");
 var _ = require("lodash")
 let games = {
@@ -49,12 +49,12 @@ io.on("connection", (socket) => {
   socket.on("placeBet", async ({ retailerId, gameName, position, betPoint, position2 }) => {
 
     const result = await placeBet(retailerId, gameName, position, betPoint);
-    console.log(gameName, "  :  ", position, " Bet Point :  ", betPoint, position2);
+
     if (result != 0) {
 
 
       if (gameName == "Parity")
-        playFunTarget(position, result);
+        playParity(position, betPoint, result);
       else if (gameName == "andarBahar") {
 
         if (position.andar) {
@@ -112,7 +112,7 @@ io.on("connection", (socket) => {
 setInterval(async () => {
   // if (new Date().getHours() > 7 && new Date().getHours() < 22) {
 
-  if (new Date().getTime() / 1000 > games.rouletteMini.startTime + 60) {
+  if (new Date().getTime() / 1000 > games.parity.startTime + 60) {
     getResult("rouletteMini", 36);
   }
 
@@ -177,8 +177,8 @@ getResultAndarBahar = async () => {
       status: 1
     })
     await payTransaction("andarBahar", result);
-    if (transactions.andarBahar != {})
-      await updateAndarBahar(result)
+    // if (transactions.andarBahar != {})
+    //   await updateAndarBahar(result)
     flushAndarBahar();
 
   }
@@ -354,6 +354,45 @@ flushAll = (gameName) => {
 }
 
 
+playParity = (position, betPoint, result) => {
+  if (position === "green" || position === "red" || position === "violet") {
+    switch (position) {
+      case "green":
+        winAmount = betAmount - commission;
+        for (let i = 0; i < 10; i++) {
+          if (i === 5) {
+            addValue(position, betPoint, result, 1.5);
+          } else if (i % 2 === 1) {
+            addValue(position, betPoint, result, 2);
+          }
+        }
+        break;
+      case "red":
+        for (let i = 0; i < 10; i++) {
+          if (i === 0) addValue(position, betPoint, result, 1.5);
+          else if (i % 2 === 0) addValue(position, betPoint, result, 2);
+        }
+        break;
+      case "violet":
+        addValue(position, betPoint, result, 4.5);
+        addValue(position, betPoint, result, 4.5);
+        break;
+      default:
+        break;
+    }
+  } else {
+    addValue(position, betPoint, result, 9);
+  }
+};
+
+addValue = (pos, betPoint, result, x) => {
+  games.position = immutable.update(games.position, [pos], (v) =>
+    v ? v + betPoint * x : betPoint * x
+  );
+  transactions = immutable.update(transactions, [pos, result], (v) =>
+    v ? v + betPoint * x : betPoint * x
+  );
+};
 
 
 
