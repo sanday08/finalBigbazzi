@@ -110,7 +110,7 @@ setInterval(async () => {
   // if (new Date().getHours() > 7 && new Date().getHours() < 22) {
 
   if (new Date().getTime() / 1000 > games.parity.startTime + 60) {
-    getResult("rouletteMini", 36);
+    getResult("parity", 36);
   }
 
   if (new Date().getTime() / 1000 > games.andarBahar.startTime + 45) {
