@@ -8,9 +8,15 @@ const sendEmail = require("../utils/sendEmail");
 //@route   Post /api/auth
 //@access  Private
 exports.register = asyncHandler(async (req, res, next) => {
-  const { name, email, referralId, mobile, password, } = req.body;
+  const { name, email, referralId, mobile, password } = req.body;
+
+  const data = await User.find({ $or: [{ mobile }, { email }] });
   //Create User
+  if (data.length > 0) {
+    return next(new ErrorResponse("Mobile or Email already registered", 401));
+  }
   const user = await User.create({ name, email, referralId, mobile, password });
+
   //Create Token
   //   const token = user.getSignedJwtToken();
   //   res.status(200).json({ success: true, token });
@@ -22,7 +28,6 @@ exports.register = asyncHandler(async (req, res, next) => {
 //@access   public
 
 exports.login = asyncHandler(async (req, res, next) => {
-
   const { mobile, password } = req.body;
   //mobile and password fields are required
   if (!mobile && !password) {
@@ -39,24 +44,23 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
   //Check if Password matches
 
-
   if (user.password != password) {
     return next(new ErrorResponse("Invalide credentials", 401));
   }
 
   if (!user.isActive) {
-    return next(new ErrorResponse("Your Account is Blocked Please contact your Admin",))
+    return next(
+      new ErrorResponse("Your Account is Blocked Please contact your Admin")
+    );
   }
   sendTokenResponse(user, 200, res);
 });
-
 
 //@desc     Login Retailer only for app
 //@route    Post /api/auth/retailer/login
 //@access   public
 
 exports.loginAdmin = asyncHandler(async (req, res, next) => {
-
   const { userName, password } = req.body;
   //userName and password fields are required
   console.log("userName : ", userName, "          password : ", password);
@@ -73,37 +77,35 @@ exports.loginAdmin = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Invalide credentials", 401));
   }
   if (user.role != "Admin") {
-    return next(new ErrorResponse("You are not authorized to access this application.", 401));
+    return next(
+      new ErrorResponse(
+        "You are not authorized to access this application.",
+        401
+      )
+    );
   }
 
-
   //Check if Password matches
-
 
   if (user.password != password) {
     return next(new ErrorResponse("Invalide credentials", 401));
   }
 
   if (!user.isActive) {
-    return next(new ErrorResponse("Your Account is Blocked Please contact your Admin",))
+    return next(
+      new ErrorResponse("Your Account is Blocked Please contact your Admin")
+    );
   }
 
   await User.findByIdAndUpdate(user._id, { isLogin: true });
   sendTokenResponse(user, 200, res);
 });
 
-
-
-
-
-
-
 //@desc     Login Retailer only for app
 //@route    Post /api/auth/retailer/login
 //@access   public
 
 exports.loginRetailer = asyncHandler(async (req, res, next) => {
-
   const { userName, password } = req.body;
   //userName and password fields are required
   console.log("userName : ", userName, "          password : ", password);
@@ -120,26 +122,29 @@ exports.loginRetailer = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Invalide credentials", 401));
   }
   if (user.role != "retailer") {
-    return next(new ErrorResponse("You are not authorized to access this application.", 401));
+    return next(
+      new ErrorResponse(
+        "You are not authorized to access this application.",
+        401
+      )
+    );
   }
 
-
   //Check if Password matches
-
 
   if (user.password != password) {
     return next(new ErrorResponse("Invalide credentials", 401));
   }
 
   if (!user.isActive) {
-    return next(new ErrorResponse("Your Account is Blocked Please contact your Admin",))
+    return next(
+      new ErrorResponse("Your Account is Blocked Please contact your Admin")
+    );
   }
 
   await User.findByIdAndUpdate(user._id, { isLogin: true });
   sendTokenResponse(user, 200, res);
 });
-
-
 
 ///@desc    Log user out/ clear cookie
 //@route    GET /api/auth/logout/
@@ -158,7 +163,7 @@ exports.logout = asyncHandler(async (req, res, next) => {
 //@access   Private
 
 exports.logoutRetailer = asyncHandler(async (req, res, next) => {
-  console.log(req.params.id)
+  console.log(req.params.id);
   await User.findByIdAndUpdate(req.params.id, { isLogin: false });
   res.cookie("token", "none", {
     expires: new Date(Date.now() + 10 * 1000),
@@ -167,9 +172,6 @@ exports.logoutRetailer = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: {} });
 });
 
-
-
-
 ///@desc     Get current logged in user
 //@route    GET /api/auth/me
 //@access   private
@@ -177,7 +179,7 @@ exports.logoutRetailer = asyncHandler(async (req, res, next) => {
 exports.getMe = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id).populate({
     path: "referralId",
-    select: "userName name -_id"
+    select: "userName name -_id",
   });
   res.status(200).json({ success: true, data: user });
 });
@@ -203,7 +205,6 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
 //@access   private
 
 exports.updatePassword = asyncHandler(async (req, res, next) => {
-
   const user = await User.findById(req.user.id).select("+password");
   //Check current password (matchPassword method defined in User models)
   if (user.password != req.body.currentPassword) {
@@ -301,17 +302,20 @@ const sendTokenResponse = (user, statusCode, res) => {
     .json({ success: true, token });
 };
 
-
 ///@desc     Update Password
 //@route    PUT /api/auth/updateTransactionPin
 //@access   private
 
 exports.updateTransactionPin = asyncHandler(async (req, res, next) => {
-
   const user = await User.findById(req.user.id).select("+password");
   //Check current password (matchPassword method defined in User models)
-  if (user.password != req.body.currentPassword || user.transactionPin != req.body.currentTransactionPin) {
-    next(new ErrorResponse(`Your Password or TransactionPin is incorrect`, 401));
+  if (
+    user.password != req.body.currentPassword ||
+    user.transactionPin != req.body.currentTransactionPin
+  ) {
+    next(
+      new ErrorResponse(`Your Password or TransactionPin is incorrect`, 401)
+    );
   }
   user.transactionPin = req.body.newTransactionPin;
   await user.save();
@@ -322,16 +326,19 @@ exports.updateTransactionPin = asyncHandler(async (req, res, next) => {
 //@routes    GET /api/auth/transactions
 //Access     Private/Admin
 exports.getTransactions = asyncHandler(async (req, res, next) => {
-  const users = await Payment.find({ $or: [{ toId: req.user.id }, { fromId: req.user.id }] });
+  const users = await Payment.find({
+    $or: [{ toId: req.user.id }, { fromId: req.user.id }],
+  });
   res.status(200).json({ success: true, data: users });
 });
-
 
 //@desc      Get all Username
 //@routes    GET /api/users/userName
 //Access     Private/Admin
 exports.getUserName = asyncHandler(async (req, res, next) => {
-  const users = await User.find({ $where: "/^" + req.body.userName + ".*/.test(this.userName)" })
+  const users = await User.find({
+    $where: "/^" + req.body.userName + ".*/.test(this.userName)",
+  });
   console.log(users);
   res.status(200).json({ success: true, data: users });
 });
@@ -339,6 +346,9 @@ exports.getUserName = asyncHandler(async (req, res, next) => {
 //@routes    GET /api/users/:id
 //Access     Private/for users
 exports.getUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById({ _id: req.params.id }).populate("name", "userName");
+  const user = await User.findById({ _id: req.params.id }).populate(
+    "name",
+    "userName"
+  );
   res.status(200).json({ success: true, data: user });
 });
