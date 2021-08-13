@@ -181,13 +181,13 @@ getResultAndarBahar = async () => {
     let finalPages = getFlipPages(pages, result);
     console.log("Final Pahges : ", finalPages);
     result = finalPages.length % 2 == 0 ? "bahar" : "andar";
-    io.in(gameName).emit("result", {
+    io.in(gameName).emit("finalResult", {
       data: {
         gameName,
         data: result,
         pages: finalPages,
       },
-      en: "result",
+      en: "finalResult",
       status: 1,
     });
     await payTransaction("andarBahar", result);
