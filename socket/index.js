@@ -132,7 +132,7 @@ setInterval(async () => {
     getResult("parity", 36);
   }
 
-  if (new Date().getTime() / 1000 > games.andarBahar.startTime + 45) {
+  if (new Date().getTime() / 1000 > games.andarBahar.startTime + 60) {
     getResult("andarBahar", 52);
     // getResultAndarBahar();
   }
