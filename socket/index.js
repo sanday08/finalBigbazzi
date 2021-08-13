@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
     users[socket.id] = gameName;
     retailers[user._id] = socket.id;
     socket.join(gameName);
-    socket.emit("res", {
+    socket.emit("join", {
       data: {
         user,
         time: new Date().getTime() / 1000 - games[gameName].startTime,
