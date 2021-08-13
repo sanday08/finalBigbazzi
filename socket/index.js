@@ -181,7 +181,7 @@ getResultAndarBahar = async () => {
     let finalPages = getFlipPages(pages, result);
     console.log("Final Pahges : ", finalPages);
     result = finalPages.length % 2 == 0 ? "bahar" : "andar";
-    io.in(gameName).emit("res", {
+    io.in(gameName).emit("result", {
       data: {
         gameName,
         data: result,
@@ -272,7 +272,7 @@ getResult = async (gameName, stopNum) => {
       }
     }
 
-  io.in(gameName).emit("res", {
+  io.in(gameName).emit("result", {
     data: {
       gameName,
       data: result,
