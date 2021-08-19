@@ -29,7 +29,7 @@ let users = {};
 let retailers = {};
 //TransactionId
 let transactions = {};
-let andarBaharResult = 52;
+let centerCard = 55;
 let adminPer = 90;
 io.on("connection", (socket) => {
   //Join Event When Application is Start
@@ -46,8 +46,8 @@ io.on("connection", (socket) => {
         user,
         time: new Date().getTime() / 1000 - games[gameName].startTime,
         numbers: numbers.records,
-        take: numbers.take,
         gameName,
+        centerCard,
         gameData,
       },
       en: "join",
@@ -116,24 +116,17 @@ io.on("connection", (socket) => {
       if (retailers[userId] == socket.id) delete retailers[userId];
     }
   });
-
-  socket.on("beep", () => {
-    socket.emit("boop", {
-      data: {},
-      status: 1,
-    });
-  });
 });
 
 setInterval(async () => {
   // if (new Date().getHours() > 7 && new Date().getHours() < 22) {
-
+  if (centerCard == 55) centerCard = Math.round(Math.random() * 51) + 1;
   if (new Date().getTime() / 1000 > games.parity.startTime + 60) {
     getResult("parity", 36);
   }
 
   if (new Date().getTime() / 1000 > games.andarBahar.startTime + 60) {
-    getResult("andarBahar", 52);
+    getResultAndarBahar();
     // getResultAndarBahar();
   }
 
@@ -150,7 +143,7 @@ getResultAndarBahar = async () => {
   let result = 0;
   gameName = "andarBahar";
 
-  if (andarBaharResult != 52) {
+  if (centerCard != 52) {
     if (games.andarBahar.andarBet != 0 || games.andarBahar.baharBet != 0) {
       //Get result
       console.log("Andar Bahar Admin Balance:", games.andarBahar.adminBalance);
@@ -176,16 +169,18 @@ getResultAndarBahar = async () => {
       "Andar Bahar After Admin Balance:",
       games.andarBahar.adminBalance
     );
-    let pages = getPages(andarBaharResult);
+    let pages = getPages(centerCard);
     console.log("Pages : ", pages);
     let finalPages = getFlipPages(pages, result);
     console.log("Final Pahges : ", finalPages);
     result = finalPages.length % 2 == 0 ? "bahar" : "andar";
+    centerCard = Math.round(Math.random() * 51) + 1;
     io.in(gameName).emit("finalResult", {
       data: {
         gameName,
         data: result,
         pages: finalPages,
+        centerCard,
       },
       en: "finalResult",
       status: 1,
@@ -200,9 +195,9 @@ flushAndarBahar = () => {
   transactions.andarBahar = {};
   games.andarBahar.andarBet = 0;
   games.andarBahar.baharBet = 0;
-  andarBaharResult = 52;
+  //centerCard = 52;
 };
-//Get Flip Pages for andarBaharResult
+//Get Flip Pages for centerCard
 getFlipPages = (pages, result) => {
   let randomNumbers = [];
   for (let i = 0; i < 52; i++) {
@@ -272,7 +267,7 @@ getResult = async (gameName, stopNum) => {
       }
     }
 
-  io.in(gameName).emit("result", {
+  io.in("Parity").emit("result", {
     data: {
       gameName,
       data: result,
@@ -286,7 +281,7 @@ getResult = async (gameName, stopNum) => {
 
   await addGameResult(gameName, result);
 
-  if (gameName == "andarBahar") andarBaharResult = result;
+  if (gameName == "andarBahar") centerCard = result;
   await payTransaction(gameName, result);
 
   // Pay Out of the winners

@@ -6,12 +6,9 @@ const Winning = require("../../models/Winning");
 async function placeBet(userId, game, position, betPoint, adminPer) {
   //Verify Token
   try {
-
     let user = await User.findById(userId);
 
     if (user.amount >= betPoint) {
-
-
       bet = await Bet.create({
         userId,
         game,
@@ -20,7 +17,6 @@ async function placeBet(userId, game, position, betPoint, adminPer) {
         userName: user.userName,
         position,
         name: user.name,
-
       });
       await User.findByIdAndUpdate(userId, {
         $inc: {
@@ -58,7 +54,6 @@ async function winGamePay(price, betId, winPosition, gameName) {
       $inc: { amount: price, wonPoint: price },
     });
 
-
     return betData.userId;
   } catch (err) {
     console.log("Error on winGamePay", err.message);
@@ -88,22 +83,17 @@ async function getLastrecord(gameName, userId) {
       .sort("-createdAt")
       .limit(15);
     let data = [];
-    let take = 0;
 
-    take = await User.findById(userId);
     for (res of result) {
       data.push(res.result);
     }
 
-    if (gameName == "rouletteMini") return { records: data, take: 0 };
-    else return { records: data, take: take[gameName] };
+    return { records: data };
   } catch (err) {
     console.log("Error on getLastrecord", err.message);
     return err.message;
   }
 }
-
-
 
 //Get Admin Percentage for winning Result
 async function getAdminPer() {
