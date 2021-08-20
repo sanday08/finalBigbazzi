@@ -140,7 +140,7 @@ setInterval(async () => {
   //}
 }, 1000);
 getResultAndarBahar = async () => {
-  games[gameName].startTime = new Date().getTime() / 1000;
+  games["andarBahar"].startTime = new Date().getTime() / 1000;
   let result = 0;
   gameName = "andarBahar";
 
