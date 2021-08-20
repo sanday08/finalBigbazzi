@@ -17,7 +17,7 @@ let games = {
     adminBalance: 0,
   },
   andarBahar: {
-    startTime: new Date().getTime() / 1000 + 25,
+    startTime: new Date().getTime() / 1000,
     position: {},
     position: {},
     adminBalance: 0,
@@ -140,6 +140,7 @@ setInterval(async () => {
   //}
 }, 1000);
 getResultAndarBahar = async () => {
+  games[gameName].startTime = new Date().getTime() / 1000;
   let result = 0;
   gameName = "andarBahar";
 
