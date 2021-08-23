@@ -105,7 +105,7 @@ io.on("connection", (socket) => {
     socket.leave(gameName);
     delete users[socket.id];
 
-    delete retailers[userId];
+    delete retailers[userId]; -
   });
 
   //Disconnect the users
