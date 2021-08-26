@@ -13,23 +13,23 @@ var _ = require("lodash");
 let games = {
   parity: {
     startTime: new Date().getTime() / 1000,
-    position: { },
+    position: {},
     adminBalance: 0,
   },
   andarBahar: {
     startTime: new Date().getTime() / 1000,
-    position: { },
+    position: {},
     andar: 0,
     bahar: 0,
     adminBalance: 0,
   },
 };
 //users: use for store game Name so when user leave room than we can used
-let users = { };
+let users = {};
 //used for when he won the match
-let retailers = { };
+let retailers = {};
 //TransactionId
-let transactions = { };
+let transactions = {};
 let centerCard = 55;
 let adminPer = 90;
 io.on("connection", (socket) => {
@@ -145,7 +145,7 @@ getResultAndarBahar = async () => {
   let result = 0;
   gameName = "andarBahar";
 
-  if (centerCard != 52) {
+  if (centerCard != 55) {
     if (games.andarBahar.andar != 0 || games.andarBahar.bahar != 0) {
       //Get result
       console.log("Andar Bahar Admin Balance:", games.andarBahar.adminBalance);
@@ -194,7 +194,7 @@ getResultAndarBahar = async () => {
   }
 };
 flushAndarBahar = () => {
-  transactions.andarBahar = { };
+  transactions.andarBahar = {};
   games.andarBahar.andar = 0;
   games.andarBahar.bahar = 0;
   //centerCard = 52;
@@ -343,8 +343,8 @@ sortObject = (entry) => {
 };
 
 flushAll = (gameName) => {
-  games[gameName].position = { };
-  transactions[gameName] = { };
+  games[gameName].position = {};
+  transactions[gameName] = {};
 };
 
 playParity = (position, betPoint, result) => {
