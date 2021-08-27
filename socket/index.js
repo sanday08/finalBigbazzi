@@ -58,8 +58,8 @@ io.on("connection", (socket) => {
 
   socket.on(
     "placeBet",
-    async ({ retailerId, gameName, position, betPoint, position2 }) => {
-      const result = await placeBet(retailerId, gameName, position, betPoint);
+    async ({ userId, gameName, position, betPoint, position2 }) => {
+      const result = await placeBet(userId, gameName, position, betPoint);
 
       if (result != 0) {
         if (gameName == "parity") playParity(position, betPoint, result);
