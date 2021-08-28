@@ -37,7 +37,7 @@ io.on("connection", (socket) => {
   socket.on("join", async ({ token, gameName }) => {
     console.log(token);
     let user = await getUserInfoBytoken(token);
-    let numbers = await getLastrecord(gameName, user._id);
+    //  let numbers = await getLastrecord(gameName, user._id);
     let gameData = await getCurrentBetData(gameName, user._id);
     users[socket.id] = gameName;
     retailers[user._id] = socket.id;
@@ -46,7 +46,7 @@ io.on("connection", (socket) => {
       data: {
         user,
         time: new Date().getTime() / 1000 - games[gameName].startTime,
-        numbers: numbers.records,
+        // numbers: numbers.records,
         gameName,
         centerCard,
         gameData,
