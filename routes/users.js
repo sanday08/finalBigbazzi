@@ -31,7 +31,7 @@ const router = express.Router();
 router.use(protect);
 router.use(authorize("User"));
 // router.route("/").get(advancedResults(User), getUsers).post(createUser);
-router.route("/results").get(advancedResults(Bet), getBetResult);
+router.route("/results").get(advancedResults(WinResult), getBetResult);
 // router.route("/announcement").get(getAnnouncement).put(updateAnnouncement);
 // router.route("/getPercentage").get(getWinningPer);
 // router.route("/updatePercentage").put(updateWinningPer);
