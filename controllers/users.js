@@ -6,6 +6,17 @@ const Winning = require("../models/Winning");
 const Announcement = require("../models/Announcement");
 const Complaint = require("../models/Complaint");
 
+
+//@desc      Get all users
+//@routes    GET /api/user/betResults
+//Access     Private/Admin
+exports.getBetResult = asyncHandler(async (req, res, next) => {
+  res.status(200).json(res.advancedResults);
+});
+
+
+
+
 //@desc      Update Winning Percentade
 //@routes    Put /api/users/updatePercentage
 //Access     Private/Admin
