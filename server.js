@@ -31,7 +31,7 @@ connectDB();
 const auth = require("./routes/auth");
 const users = require("./routes/users");
 
-const retailers = require("./routes/retailers");
+
 const cors = require("cors");
 const { options } = require("./routes/auth");
 const app = express();
@@ -82,7 +82,7 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api/auth", auth);
 app.use("/api/users", users);
 
-app.use("/api/retailers", retailers);
+
 
 
 //custome error handling from express error handler (Always write below the Mount Routes)
