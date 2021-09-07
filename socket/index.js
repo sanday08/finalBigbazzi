@@ -58,7 +58,7 @@ io.on("connection", (socket) => {
 
   socket.on(
     "placeBet",
-    async ({ userId, gameName, position, betPoint, position2 }) => {
+    async ({ userId, gameName, position, betPoint }) => {
       const result = await placeBet(userId, gameName, position, betPoint);
 
       if (result != 0) {
@@ -270,7 +270,7 @@ getResult = async (gameName, stopNum) => {
       }
     }
 
-  io.in("Parity").emit("result", {
+  io.in("parity").emit("result", {
     data: {
       gameName,
       data: result,
